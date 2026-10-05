@@ -3,132 +3,132 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EE290 Project Dashboard</title>
+    <title>EE290 Project Network Diagram</title>
+    <!-- Tailwind CSS Standard CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <!-- Mermaid Standard CDN -->
     <script src="https://jsdelivr.net"></script>
-    <script src="https://jsdelivr.net"></script>
-    <style>
-        .highlight-high g.node.priority-high { opacity: 1 !important; filter: drop-shadow(0 0 8px #ef4444); }
-        .highlight-high g.node:not(.priority-high), .highlight-high g.edgePath { opacity: 0.15; }
-        .highlight-medium g.node.priority-medium { opacity: 1 !important; filter: drop-shadow(0 0 8px #eab308); }
-        .highlight-medium g.node:not(.priority-medium), .highlight-medium g.edgePath { opacity: 0.15; }
-        .highlight-low g.node.priority-low { opacity: 1 !important; filter: drop-shadow(0 0 8px #10b981); }
-        .highlight-low g.node:not(.priority-low), .highlight-low g.edgePath { opacity: 0.15; }
-        .highlight-critical g.edgePath.critical-edge path { stroke: #ef4444 !important; stroke-width: 4px !important; }
-        .highlight-critical g.node.priority-high { opacity: 1 !important; }
-        .highlight-critical g.node:not(.priority-high), .highlight-critical g.edgePath:not(.critical-edge) { opacity: 0.15; }
-    </style>
 </head>
-<body class="bg-[#0b0f19] text-slate-200 min-h-screen flex flex-col justify-between">
+<body class="bg-[#0b0f19] text-slate-200 min-h-screen flex flex-col justify-between font-sans">
 
-    <header class="bg-[#111827] border-b border-slate-800 p-4 shadow-md">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+    <!-- HEADER CONTROLS -->
+    <header class="bg-[#111827] border-b border-slate-800 p-4 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <div>
-                <h1 class="text-xl font-bold text-white">📊 Project EE290: Network Diagram</h1>
+                <h1 class="text-lg font-bold text-white flex items-center gap-2">📊 Project EE290: Network Diagram</h1>
                 <p class="text-xs text-slate-400">Cabinet Sensor Security System (Real-time & Low Cost)</p>
             </div>
-            <div class="flex flex-wrap items-center gap-4">
-                <div class="bg-[#1f2937] px-3 py-1.5 rounded-lg border border-slate-700 text-xs flex items-center gap-2">
-                    <span class="text-slate-400">🔍 Zoom:</span>
-                    <input type="range" id="zoomSlider" min="60" max="140" value="100" class="w-24 accent-blue-500 cursor-pointer">
+            
+            <!-- Controls: Zoom & Color Priority Legends -->
+            <div class="flex flex-wrap items-center gap-4 text-xs">
+                <div class="bg-[#1f2937] px-3 py-2 rounded-lg border border-slate-700 flex items-center gap-2">
+                    <span class="text-slate-400">🔍 Zoom View:</span>
+                    <input type="range" id="zoomSlider" min="50" max="150" value="100" class="w-24 accent-blue-500 cursor-pointer">
                     <span id="zoomVal" class="font-mono text-blue-400 w-8 text-right">100%</span>
                 </div>
-                <div class="flex gap-1 bg-[#1f2937] p-1 rounded-lg border border-slate-700 text-xs">
-                    <button onclick="filterPriority('all')" id="btn-all" class="px-2.5 py-1.5 rounded bg-blue-600 text-white cursor-pointer">All Tasks</button>
-                    <button onclick="filterPriority('high')" id="btn-high" class="px-2.5 py-1.5 rounded text-slate-400 hover:text-white cursor-pointer">🔴 High</button>
-                    <button onclick="filterPriority('medium')" id="btn-medium" class="px-2.5 py-1.5 rounded text-slate-400 hover:text-white cursor-pointer">🟡 Medium</button>
-                    <button onclick="filterPriority('low')" id="btn-low" class="px-2.5 py-1.5 rounded text-slate-400 hover:text-white cursor-pointer">🟢 Low</button>
-                    <button onclick="filterPriority('critical')" id="btn-critical" class="px-2.5 py-1.5 rounded text-slate-400 hover:text-white border border-red-500/20 cursor-pointer">Critical Path</button>
+                <div class="flex gap-3 bg-[#1f2937] px-3 py-2 rounded-lg border border-slate-700">
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-red-500"></span> High</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> Medium</span>
+                    <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-green-500"></span> Low</span>
                 </div>
             </div>
         </div>
     </header>
 
+    <!-- MAIN NETWORK CANVAS -->
     <main class="flex-1 max-w-7xl mx-auto w-full p-4 flex items-center justify-center">
-        <div id="canvasWrapper" class="w-full bg-[#111827]/40 border border-slate-800 rounded-xl p-6 overflow-auto min-h-[450px] flex justify-center items-center">
-            <div id="diagramContainer" class="transform origin-center transition-transform duration-150">
+        <div class="w-full bg-[#111827]/40 border border-slate-800 rounded-xl p-6 overflow-auto min-h-[500px] flex justify-center items-center shadow-inner">
+            <div id="diagramContainer" class="transform origin-center transition-transform duration-100">
+                
+                <!-- CORRECTION: Added proper class definition for rendering -->
                 <div class="mermaid">
                     graph LR
-                        M1["📋 M1: Project Planning<br><b>(HIGH PRIORITY)</b>"]:::priority-high
-                        W1["🔍 W1: Web App Research<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
-                        W2["🔍 W2: Hardware Analysis<br><b>(LOW PRIORITY)</b>"]:::priority-low
-                        D1["🔌 D1: Circuit & Battery Design<br><b>(HIGH PRIORITY)</b>"]:::priority-high
-                        D2["📱 D2: Web App UI Design<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
-                        D3["📦 D3: Compact Enclosure DIY<br><b>(LOW PRIORITY)</b>"]:::priority-low
-                        M2["🔄 M2: Weekly Meeting 2<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
-                        M3["🔄 M3: Weekly Meeting 3<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
-                        B1["💻 B1: Core Firmware Coding<br><b>(HIGH PRIORITY)</b>"]:::priority-high
-                        B2["🌐 B2: App Integration & Link<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
-                        T1["🧪 T1: 1-Week Battery Test<br><b>(HIGH PRIORITY)</b>"]:::priority-high
-                        T2["🧪 T2: Application Alert Test<br><b>(LOW PRIORITY)</b>"]:::priority-low
-                        C1["🚀 C1: Final Product Delivery<br><b>(HIGH PRIORITY)</b>"]:::priority-high
-                        M4["🏁 M4: Final Progress Sync<br><b>(MEDIUM PRIORITY)</b>"]:::priority-medium
+                        M1["📋 M1: Project Planning<br><b>(HIGH PRIORITY)</b>"]:::high
+                        W1["🔍 W1: Web App Research<br><b>(MEDIUM PRIORITY)</b>"]:::medium
+                        W2["🔍 W2: Hardware Analysis<br><b>(LOW PRIORITY)</b>"]:::low
+                        
+                        D1["🔌 D1: Circuit & Battery Design<br><b>(HIGH PRIORITY)</b>"]:::high
+                        D2["📱 D2: Web App UI Design<br><b>(MEDIUM PRIORITY)</b>"]:::medium
+                        D3["📦 D3: Compact Enclosure DIY<br><b>(LOW PRIORITY)</b>"]:::low
+                        
+                        M2["🔄 M2: Weekly Meeting 2<br><b>(MEDIUM PRIORITY)</b>"]:::medium
+                        M3["🔄 M3: Weekly Meeting 3<br><b>(MEDIUM PRIORITY)</b>"]:::medium
+                        
+                        B1["💻 B1: Core Firmware Coding<br><b>(HIGH PRIORITY)</b>"]:::high
+                        B2["🌐 B2: App Integration & Link<br><b>(MEDIUM PRIORITY)</b>"]:::medium
+                        
+                        T1["🧪 T1: 1-Week Battery Test<br><b>(HIGH PRIORITY)</b>"]:::high
+                        T2["🧪 T2: Application Alert Test<br><b>(LOW PRIORITY)</b>"]:::low
+                        
+                        C1["🚀 C1: Final Product Delivery<br><b>(HIGH PRIORITY)</b>"]:::high
+                        M4["🏁 M4: Final Progress Sync<br><b>(MEDIUM PRIORITY)</b>"]:::medium
 
-                        M1 ==> D1:::critical-edge
+                        %% Connect Nodes and Critical Path
+                        M1 ==> D1:::critical
                         M1 --> W1
                         M1 --> W2
                         W1 --> D2
                         W1 --> M2
                         W2 --> M2
-                        D1 ==> B1:::critical-edge
+                        D1 ==> B1:::critical
                         D1 --> D3
                         D2 --> B2
                         M2 --> M3
                         M3 --> M4
-                        B1 ==> T1:::critical-edge
+                        B1 ==> T1:::critical
                         B2 --> B1
                         B2 --> T2
-                        T1 ==> C1:::critical-edge
+                        T1 ==> C1:::critical
                         T2 --> C1
                         C1 --> M4
 
-                        classDef priority-high fill:#1e1b4b,stroke:#ef4444,stroke-width:2.5px,color:#fff;
-                        classDef priority-medium fill:#1c1917,stroke:#eab308,stroke-width:2px,color:#fff;
-                        classDef priority-low fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff;
+                        %% Priority Style Maps
+                        classDef high fill:#1e1b4b,stroke:#ef4444,stroke-width:3px,color:#fff;
+                        classDef medium fill:#1c1917,stroke:#eab308,stroke-width:2px,color:#fff;
+                        classDef low fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#fff;
+                        classDef default fill:#1e293b,stroke:#475569,stroke-width:1px,color:#fff;
+                        classDef critical stroke:#ef4444,stroke-width:4px;
                 </div>
+
             </div>
         </div>
     </main>
 
+    <!-- METRICS DASHBOARD -->
     <footer class="bg-[#111827] border-t border-slate-800 p-4">
         <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 text-center text-xs">
-            <div class="bg-[#1f2937]/30 p-2.5 rounded border border-slate-800">
-                <span class="text-slate-400 block mb-1">BUDGET</span>
+            <div class="bg-[#1f2937]/30 p-3 rounded border border-slate-800">
+                <span class="text-slate-400 block mb-1">TOTAL BUDGET</span>
                 <span class="font-bold text-green-400 text-sm">฿200 THB</span>
             </div>
-            <div class="bg-[#1f2937]/30 p-2.5 rounded border border-slate-800">
-                <span class="text-slate-400 block mb-1">DURATION</span>
-                <span class="font-bold text-blue-400 text-sm">19 Days</span>
+            <div class="bg-[#1f2937]/30 p-3 rounded border border-slate-800">
+                <span class="text-slate-400 block mb-1">TOTAL DURATION</span>
+                <span class="font-bold text-blue-400 text-sm">19 Working Days</span>
             </div>
-            <div class="bg-[#1f2937]/30 p-2.5 rounded border border-slate-800">
-                <span class="text-slate-400 block mb-1">CRITICAL PATH</span>
-                <span class="font-bold text-red-400 text-sm">5 Tasks</span>
+            <div class="bg-[#1f2937]/30 p-3 rounded border border-slate-800">
+                <span class="text-slate-400 block mb-1">CRITICAL PATH TASKS</span>
+                <span class="font-bold text-red-400 text-sm">5 Core Activities</span>
             </div>
-            <div class="bg-[#1f2937]/30 p-2.5 rounded border border-slate-800">
-                <span class="text-slate-400 block mb-1">STATUS</span>
-                <span class="font-bold text-indigo-400 text-sm">Week 1 Done</span>
+            <div class="bg-[#1f2937]/30 p-3 rounded border border-slate-800">
+                <span class="text-slate-400 block mb-1">PROJECT PROGRESS</span>
+                <span class="font-bold text-indigo-400 text-sm">Week 1 Complete</span>
             </div>
         </div>
     </footer>
 
+    <!-- ZOOM LOGIC CONTROLLER -->
     <script>
+        // Standard initialization with loose security for HTML labels
         mermaid.initialize({ startOnLoad: true, theme: 'dark', securityLevel: 'loose' });
+        
         const slider = document.getElementById('zoomSlider');
         const zoomVal = document.getElementById('zoomVal');
         const diagram = document.getElementById('diagramContainer');
+        
         slider.addEventListener('input', (e) => {
             zoomVal.textContent = e.target.value + '%';
             diagram.style.transform = `scale(${e.target.value / 100})`;
         });
-        function filterPriority(level) {
-            const container = document.getElementById('canvasWrapper');
-            container.classList.remove('highlight-high', 'highlight-medium', 'highlight-low', 'highlight-critical');
-            ['all', 'high', 'medium', 'low', 'critical'].forEach(b => {
-                document.getElementById(`btn-${b}`).className = b === level 
-                    ? `px-2.5 py-1.5 rounded text-white cursor-pointer ${b==='critical'?'bg-red-600':'bg-blue-600'}`
-                    : "px-2.5 py-1.5 rounded text-slate-400 hover:text-white cursor-pointer";
-            });
-            if (level !== 'all') container.classList.add(`highlight-${level}`);
-        }
     </script>
 </body>
 </html>
